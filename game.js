@@ -507,40 +507,83 @@ function initGame() {
         const pathNodes = maps[mapName] || maps.grassland;
         markPathOnTileMap(pathNodes);
 
+        // 맵 테마별 특수 타일 종류 및 타일 목표 개수 설정
+        let specialType = 1; // 기본 웅덩이
+        let highlandCount = 30;
+        let specialCount = 20;
+
         if (mapName === 'grassland') {
-            placeTilePatch(3, 3, 2, 2, 1);
-            placeTilePatch(8, 14, 2, 2, 1);
-            placeTilePatch(2, 9, 2, 2, 2);
-            placeTilePatch(9, 4, 2, 2, 2);
-            placeTilePatch(9, 11, 2, 1, 2);
+            specialType = 1; highlandCount = 35; specialCount = 20;
         } else if (mapName === 'mountain') {
-            placeTilePatch(4, 5, 2, 3, 4);
-            placeTilePatch(8, 11, 2, 2, 4);
-            placeTilePatch(1, 1, 1, 2, 2);
-            placeTilePatch(5, 15, 2, 2, 2);
-            placeTilePatch(10, 1, 2, 1, 2);
-            placeTilePatch(10, 8, 2, 2, 2);
+            specialType = 4; highlandCount = 40; specialCount = 25;
         } else if (mapName === 'ice') {
-            placeTilePatch(1, 8, 2, 3, 1);
-            placeTilePatch(8, 3, 3, 2, 1);
-            placeTilePatch(4, 3, 1, 2, 2);
-            placeTilePatch(4, 15, 2, 2, 2);
-            placeTilePatch(8, 10, 2, 2, 2);
+            specialType = 1; highlandCount = 32; specialCount = 22;
         } else if (mapName === 'desert') {
-            placeTilePatch(5, 8, 2, 4, 1);
-            placeTilePatch(1, 14, 2, 3, 2);
-            placeTilePatch(9, 2, 2, 2, 2);
-            placeTilePatch(10, 15, 2, 2, 2);
+            specialType = 1; highlandCount = 30; specialCount = 22;
         } else if (mapName === 'heaven') {
-            placeTilePatch(6, 9, 2, 2, 1);
-            placeTilePatch(1, 2, 2, 2, 2);
-            placeTilePatch(1, 14, 2, 2, 2);
-            placeTilePatch(10, 10, 2, 2, 2);
-            placeTilePatch(5, 1, 3, 2, 4);
-            placeTilePatch(5, 17, 3, 2, 4);
-        } else {
-            placeTilePatch(2, 6, 2, 2, 1);
-            placeTilePatch(8, 12, 2, 2, 2);
+            specialType = 4; highlandCount = 35; specialCount = 30;
+        } else { // classic 등
+            specialType = 1; highlandCount = 25; specialCount = 15;
+        }
+
+        // 지형 군집 무작위 생성 (Clustering Algorithm)
+        // 1. 고지 타일 생성 (타일 값: 2)
+        createOrganicClusters(2, highlandCount, 6);
+        // 2. 특수 장애물 타일 생성 (타일 값: specialType)
+        createOrganicClusters(specialType, specialCount, 5);
+
+        // 내부 헬퍼 함수: 유기적 군집 생성 알고리즘
+        function createOrganicClusters(tileType, targetTotalCount, maxClusterSize) {
+            let placedCount = 0;
+            let attempts = 0;
+
+            while (placedCount < targetTotalCount && attempts < 250) {
+                attempts++;
+                // 1. 시드(Seed) 위치 무작위 설정
+                const startR = Math.floor(Math.random() * rows);
+                const startC = Math.floor(Math.random() * cols);
+
+                if (currentTileMap[startR][startC] !== 0) continue;
+
+                // 2. 시드부터 시작해서 인접한 셀로 전파 (BFS 형태)
+                let queue = [{r: startR, c: startC}];
+                let visited = new Set();
+                visited.add(`${startR},${startC}`);
+                let currentClusterSize = 0;
+
+                while (queue.length > 0 && placedCount < targetTotalCount && currentClusterSize < maxClusterSize) {
+                    // 무작위성을 부여하기 위해 큐에서 임의의 위치를 꺼냄 (Randomized BFS)
+                    const randIdx = Math.floor(Math.random() * queue.length);
+                    const curr = queue.splice(randIdx, 1)[0];
+
+                    if (currentTileMap[curr.r][curr.c] === 0) {
+                        currentTileMap[curr.r][curr.c] = tileType;
+                        placedCount++;
+                        currentClusterSize++;
+                    }
+
+                    // 4방향 이웃 탐색
+                    const directions = [
+                        {dr: -1, dc: 0}, {dr: 1, dc: 0},
+                        {dr: 0, dc: -1}, {dr: 0, dc: 1}
+                    ];
+
+                    for (const dir of directions) {
+                        const nr = curr.r + dir.dr;
+                        const nc = curr.c + dir.dc;
+
+                        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                            if (currentTileMap[nr][nc] === 0 && !visited.has(`${nr},${nc}`)) {
+                                visited.add(`${nr},${nc}`);
+                                // 65% 확률로 큐에 추가하여 자연스러운 불규칙 형상을 만듦
+                                if (Math.random() < 0.65) {
+                                    queue.push({r: nr, c: nc});
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
