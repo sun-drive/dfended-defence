@@ -1,0 +1,855 @@
+:root {
+    --bg-primary: #121214;
+    --bg-secondary: #1a1a1e;
+    --text-primary: #e4e4e7;
+    --text-muted: #a1a1aa;
+    --accent-blue: #3b82f6;
+    --accent-purple: #8b5cf6;
+    --accent-gold: #f59e0b;
+    --border-color: #2e2e33;
+    --card-bg: #222227;
+    --rarity-common: #71717a;
+    --rarity-rare: #3b82f6;
+    --rarity-epic: #8b5cf6;
+    --rarity-legendary: #f59e0b;
+}
+
+body {
+    font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+    user-select: none;
+}
+
+h1 {
+    color: #fff;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+#main-container {
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 1050px;
+}
+
+/* Screen Toggle States */
+.screen {
+    display: none;
+    width: 100%;
+}
+.screen.active {
+    display: flex;
+}
+
+/* Main Menu Screen Layout */
+#menu-screen {
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    min-height: 600px;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.dc-display {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.menu-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.tab-button {
+    padding: 10px 20px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+    color: var(--text-primary);
+    background-color: var(--border-color);
+}
+
+.tab-button.active {
+    color: #fff;
+    background-color: var(--accent-purple);
+    border-color: var(--accent-purple);
+}
+
+/* Tab Content Areas */
+.tab-content {
+    display: none;
+    flex-grow: 1;
+    min-height: 450px;
+}
+.tab-content.active {
+    display: flex;
+}
+
+/* Lobby Tab */
+#lobby-tab {
+    display: none;
+    flex-direction: row;
+    gap: 20px;
+}
+#lobby-tab.active {
+    display: flex;
+}
+
+.lobby-left {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.lobby-right {
+    flex: 1;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.map-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.map-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.map-card:hover {
+    border-color: var(--accent-blue);
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.map-card.active {
+    border-color: var(--accent-purple);
+    background-color: rgba(139, 92, 246, 0.05);
+}
+
+.map-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.map-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.btn-large {
+    padding: 15px 30px;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #16a34a;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.btn-large:hover {
+    background-color: #15803d;
+}
+
+.limit-upgrade-box {
+    background-color: rgba(0,0,0,0.15);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 15px;
+}
+
+.btn-limit-upgrade {
+    width: 100%;
+    padding: 8px;
+    background-color: var(--accent-blue);
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+.btn-limit-upgrade:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+.btn-limit-upgrade:disabled {
+    background-color: #2a2a30;
+    color: #555;
+    cursor: not-allowed;
+}
+
+/* Gacha Tab */
+#gacha-tab {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.gacha-box {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    width: 400px;
+}
+
+.gacha-rates-list {
+    margin-top: 15px;
+    text-align: left;
+    background: rgba(0,0,0,0.2);
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.gacha-rates-list p {
+    margin: 4px 0;
+}
+
+.btn-gacha {
+    background-color: var(--accent-purple);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 15px;
+}
+
+.btn-gacha:hover {
+    background-color: #7c3aed;
+}
+
+.gacha-result-overlay {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 6px;
+    background-color: rgba(255,255,255,0.02);
+    font-size: 1.25rem;
+    font-weight: bold;
+    min-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    border: 1px dashed var(--border-color);
+}
+
+/* Deck Tab */
+#deck-tab {
+    flex-direction: column;
+    gap: 20px;
+}
+
+.deck-section {
+    background-color: var(--card-bg);
+    border: 1px solid var(--accent-blue);
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.deck-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--accent-blue);
+}
+
+.deck-slots {
+    display: flex;
+    gap: 15px;
+    min-height: 120px;
+}
+
+.deck-slot {
+    width: 110px;
+    height: 110px;
+    border: 1px dashed var(--border-color);
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0,0,0,0.2);
+    position: relative;
+    cursor: pointer;
+    font-size: 2rem;
+}
+
+.deck-slot.filled {
+    border-style: solid;
+}
+
+.tower-item {
+    width: 100px;
+    height: 100px;
+    border-radius: 6px;
+    border: 1.5px solid;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+    box-sizing: border-box;
+    padding: 8px 4px;
+    transition: transform 0.2s ease;
+}
+
+.tower-item:hover {
+    transform: scale(1.03);
+}
+
+.tower-item.selected {
+    border-color: #fff;
+}
+
+.tower-item.common { border-color: var(--rarity-common); background-color: rgba(113, 113, 122, 0.2); }
+.tower-item.rare { border-color: var(--rarity-rare); background-color: rgba(59, 130, 246, 0.2); }
+.tower-item.epic { border-color: var(--rarity-epic); background-color: rgba(139, 92, 246, 0.2); }
+.tower-item.legendary { border-color: var(--rarity-legendary); background-color: rgba(245, 158, 11, 0.2); }
+
+.inventory-section {
+    flex-grow: 1;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tower-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Management & Upgrade Tab */
+#management-tab {
+    flex-direction: row;
+    gap: 20px;
+}
+
+.manage-left {
+    flex: 1.2;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.manage-right {
+    flex: 1;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.detail-stats {
+    background-color: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 6px;
+    margin: 10px 0;
+}
+
+.detail-stats p {
+    margin: 8px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.stat-val {
+    font-weight: bold;
+    color: var(--accent-blue);
+}
+
+.upgrade-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-upgrade-menu {
+    width: 100%;
+    padding: 12px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: var(--accent-blue);
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.btn-upgrade-menu:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.btn-upgrade-menu:disabled {
+    background-color: #2a2a30;
+    cursor: not-allowed;
+    color: #555;
+}
+
+.btn-awaken-menu {
+    width: 100%;
+    padding: 12px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: var(--accent-gold);
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.btn-awaken-menu:hover:not(:disabled) {
+    background-color: #d97706;
+}
+
+.btn-awaken-menu:disabled {
+    background-color: #2a2a30;
+    cursor: not-allowed;
+    color: #555;
+}
+
+/* In-game Screen Layout */
+#game-screen {
+    display: none;
+    flex-direction: row;
+    position: relative;
+    width: 1050px;
+    height: 520px;
+}
+
+#boss-info-container {
+    position: absolute;
+    top: 10px;
+    left: 400px;
+    transform: translateX(-50%);
+    width: 320px;
+    background-color: rgba(26, 26, 30, 0.95);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
+    text-align: center;
+    z-index: 50;
+}
+
+#boss-info-container.hidden {
+    display: none;
+}
+
+#boss-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #ef4444;
+}
+
+#boss-health-bar-container {
+    width: 100%;
+    height: 10px;
+    background-color: #27272a;
+    border-radius: 5px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+#boss-health-bar {
+    width: 100%;
+    height: 100%;
+    background-color: #ef4444;
+    transition: width 0.1s linear;
+}
+
+#notification-area {
+    position: absolute;
+    top: 50%;
+    left: 400px;
+    transform: translate(-50%, -50%);
+    background-color: rgba(26, 26, 30, 0.95);
+    border: 1px solid var(--accent-purple);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 6px;
+    z-index: 100;
+    font-size: 1.2em;
+    font-weight: bold;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#notification-area.show {
+    opacity: 1;
+}
+
+#notification-area.hidden {
+    display: none;
+}
+
+#game-canvas {
+    width: 800px;
+    height: 520px;
+    background-color: #121214;
+    display: block;
+    flex-shrink: 0;
+}
+
+#ui-panel {
+    width: 250px;
+    height: 100%;
+    background-color: var(--bg-secondary);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+#ui-panel h2, #ui-panel h3 {
+    font-size: 1.05rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+    margin: 5px 0 10px 0;
+    color: #fff;
+}
+
+#game-stats {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+#game-stats p {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+#game-stats span {
+    font-weight: bold;
+    color: var(--accent-blue);
+}
+
+#slot-limit-display {
+    color: var(--accent-gold) !important;
+}
+
+#buy-slot-container {
+    margin: 5px 0;
+}
+
+.btn-buy-slot {
+    width: 100%;
+    padding: 6px;
+    background-color: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+.btn-buy-slot:hover {
+    background-color: #15803d;
+}
+.btn-buy-slot:disabled {
+    background-color: #2a2a30;
+    color: #555;
+    cursor: not-allowed;
+}
+
+#gacha-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+#gacha-button, #start-wave-button, #back-to-menu-button {
+    padding: 10px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+#gacha-button {
+    background-color: var(--accent-blue);
+}
+#gacha-button:hover {
+    background-color: #2563eb;
+}
+
+#start-wave-button {
+    background-color: #16a34a;
+}
+#start-wave-button:hover {
+    background-color: #15803d;
+}
+
+#back-to-menu-button {
+    background-color: #dc2626;
+}
+#back-to-menu-button:hover {
+    background-color: #b91c1c;
+}
+
+#unit-inventory {
+    flex-grow: 1;
+    border: 1px solid var(--border-color);
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    padding: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-content: flex-start;
+    overflow-y: auto;
+}
+
+.unit-icon {
+    width: 38px;
+    height: 38px;
+    border: 1.5px solid;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: white;
+}
+.unit-icon.common { border-color: var(--rarity-common); background-color: rgba(113,113,122,0.15); }
+.unit-icon.rare { border-color: var(--rarity-rare); background-color: rgba(59,130,246,0.15); }
+.unit-icon.epic { border-color: var(--rarity-epic); background-color: rgba(139,92,246,0.15); }
+.unit-icon.legendary { border-color: var(--rarity-legendary); background-color: rgba(245,158,11,0.15); }
+.unit-icon.selected {
+    border-color: #fff;
+}
+
+/* In-game Bottom Panel */
+#bottom-panel {
+    display: flex;
+    padding: 15px;
+    gap: 20px;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    box-sizing: border-box;
+}
+
+#selected-unit-info, #upgrade-panel, #enemy-info-panel {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px;
+    flex: 1;
+    min-height: 120px;
+}
+
+#selected-unit-info h3, #upgrade-panel h4, #enemy-info-panel h3 {
+    margin: 0 0 8px 0;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 4px;
+    color: #fff;
+}
+
+#selected-unit-info p, #upgrade-panel p, #enemy-info-panel p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+}
+
+#upgrade-panel.hidden, #enemy-info-panel.hidden {
+    display: none !important;
+}
+
+#stat-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.stat-button {
+    padding: 6px;
+    background-color: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-color);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+.stat-button:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+#action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#sell-unit-button, #move-unit-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+}
+#sell-unit-button {
+    background-color: #dc2626;
+}
+#sell-unit-button:hover {
+    background-color: #b91c1c;
+}
+#move-unit-button {
+    background-color: var(--accent-blue);
+}
+#move-unit-button:hover {
+    background-color: #2563eb;
+}
+
+/* Key Help visualizer */
+.key-hint {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: var(--accent-blue);
+    font-weight: bold;
+}
+
+/* Gacha Types Grid Layout */
+.gacha-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.gacha-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+    box-sizing: border-box;
+}
+
+.gacha-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.15rem;
+    font-weight: bold;
+}
+
+.gacha-card p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 4px 0;
+    line-height: 1.3;
+}
+
+.btn-gacha-card {
+    background-color: var(--accent-purple);
+    border: none;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+.btn-gacha-card:hover {
+    background-color: #7c3aed;
+}
+

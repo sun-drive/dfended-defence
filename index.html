@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가챠 타워 디펜스</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="style.css?v=1.1">
+</head>
+<body>
+    <h1>가챠 타워 디펜스</h1>
+    <div id="main-container">
+        
+        <!-- ==================== MAIN MENU SCREEN ==================== -->
+        <div id="menu-screen" class="screen active">
+            <div class="menu-header">
+                <div class="menu-tabs">
+                    <button class="tab-button active" data-tab="lobby">로비</button>
+                    <button class="tab-button" data-tab="gacha">타워 뽑기</button>
+                    <button class="tab-button" data-tab="deck">덱 편집</button>
+                    <button class="tab-button" data-tab="management">타워 강화 & 각성</button>
+                </div>
+                <div class="dc-display">
+                    <span>DC:</span>
+                    <span id="dc-currency">0</span>
+                </div>
+            </div>
+
+            <!-- Tab 1: Lobby (Map Selection & Start) -->
+            <div id="lobby-tab" class="tab-content active">
+                <div class="lobby-left">
+                    <h2>맵 선택</h2>
+                    <div class="map-card-grid">
+                        <div class="map-card active" data-map="grassland">
+                            <div class="map-name">초원 맵</div>
+                            <div class="map-desc">흙 & 잔디 블록<br>자가치유하는 재생 적들과 대지 정령 보스</div>
+                        </div>
+                        <div class="map-card" data-map="mountain">
+                            <div class="map-name">산악 맵</div>
+                            <div class="map-desc">돌 & 구덩이 타일<br>돌 갑옷 골렘과 스턴 유발 바위 골렘 보스</div>
+                        </div>
+                        <div class="map-card" data-map="ice">
+                            <div class="map-name">얼음 맵</div>
+                            <div class="map-desc">얼음 & 눈 블록<br>한기 디버프와 타워 빙결 기믹의 빙하 보스</div>
+                        </div>
+                        <div class="map-card" data-map="desert">
+                            <div class="map-name">사막 맵</div>
+                            <div class="map-desc">모래 블록<br>회피율 높은 전갈과 사거리 감소의 모래 폭풍 보스</div>
+                        </div>
+                        <div class="map-card" data-map="heaven">
+                            <div class="map-name">천국 맵</div>
+                            <div class="map-desc">구름 & 공허 타일<br>투명한 비행 적들과 타워를 띄우는 타락 천사 보스</div>
+                        </div>
+                        <div class="map-card" data-map="classic">
+                            <div class="map-name">클래식 맵</div>
+                            <div class="map-desc">기존 맵 경로<br>기존 몬스터들과 오리지널 보스(헌터/쉴더/더 킹)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lobby-right">
+                    <div>
+                        <h2>게임 준비</h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; margin-bottom: 15px;">
+                            * 덱을 최소 1개 이상 편집하고 게임을 시작해야 합니다.<br>
+                            * 인게임에서 덱에 저장된 타워들만 뽑기에 등장합니다.<br>
+                            * <span class="key-hint">Q</span> 키 홀드: 타일 속성 가이드 보기<br>
+                            * <span class="key-hint">W</span> 키 홀드: 몬스터 이동 경로 보기<br>
+                            * <span class="key-hint">E</span> 키 클릭: 격자선(그리드) 켜고 끄기
+                        </p>
+                        
+                        <!-- 선택한 맵 프리뷰 영역 -->
+                        <div style="margin: 10px 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                            <span style="font-size: 0.8rem; font-weight: bold; color: var(--accent-blue);">선택된 맵 레이아웃 프리뷰</span>
+                            <canvas id="lobby-preview-canvas" width="200" height="130" style="background: #121214; border-radius: 4px; border: 1px solid var(--border-color);"></canvas>
+                        </div>
+                        
+                        <!-- 대기 타워 제한 영구 확장 업그레이드 UI -->
+                        <div class="limit-upgrade-box">
+                            <div style="font-weight: bold; font-size: 0.9rem; color: var(--accent-blue);">
+                                대기 타워 보유 제한 영구 확장
+                            </div>
+                            <div style="font-size: 0.8rem; margin-top: 4px; color: var(--text-muted);">
+                                현재 최대 한도: <span id="lobby-limit-display" style="font-weight:bold; color:white;">4</span>개
+                            </div>
+                            <button id="upgrade-limit-button" class="btn-limit-upgrade">확장하기 (비용: 300 DC)</button>
+                        </div>
+                        
+                        <!-- 데이터 리셋 버튼 추가 -->
+                        <div style="margin-top: 10px; text-align: right;">
+                            <button onclick="window.resetGameData()" style="background: none; border: none; color: var(--text-muted); font-size: 0.75rem; text-decoration: underline; cursor: pointer;">게임 데이터 완전 초기화</button>
+                        </div>
+                    </div>
+                    <button id="start-game-button" class="btn-large" style="margin-top: 15px;">전투 시작</button>
+                </div>
+            </div>
+
+            <!-- Tab 2: Gacha (Draw Towers) -->
+            <div id="gacha-tab" class="tab-content" style="flex-direction: column; align-items: center; justify-content: flex-start; gap: 15px;">
+                <h2 style="margin-top: 10px;">차원 균열 소환 상점</h2>
+                <div class="gacha-grid">
+                    <!-- 일반 소환 -->
+                    <div class="gacha-card">
+                        <h3 style="color: #71717a;">일반 소환</h3>
+                        <p>기본 등급 확률로 타워를 무작위 소환합니다.</p>
+                        <p style="font-size: 0.75rem; color: var(--text-muted);">
+                            일반: 44% | 희귀: 29% | 에픽: 19% | 전설: 8%
+                        </p>
+                        <button class="btn-gacha-card" data-gacha="normal">소환 (100 DC)</button>
+                    </div>
+                    <!-- 프리미엄 소환 -->
+                    <div class="gacha-card">
+                        <h3 style="color: #ffb703;">프리미엄 소환</h3>
+                        <p>일반 등급을 배제하고 고등급 타워만 소환합니다.</p>
+                        <p style="font-size: 0.75rem; color: var(--accent-gold);">
+                            희귀: 40% | 에픽: 40% | 전설: 20%
+                        </p>
+                        <button class="btn-gacha-card" data-gacha="premium" style="background-color:#d97706;">소환 (250 DC)</button>
+                    </div>
+                    <!-- 불꽃 소환 -->
+                    <div class="gacha-card">
+                        <h3 style="color: #ef4444;">불꽃 소환</h3>
+                        <p>화염 속성 및 전기 유인체 관련 타워 획득률이 증가합니다.</p>
+                        <p style="font-size: 0.75rem; color: #f87171;">
+                            화염 타워 / 테슬라 타워 등장률 50% 보장
+                        </p>
+                        <button class="btn-gacha-card" data-gacha="fire" style="background-color:#dc2626;">소환 (150 DC)</button>
+                    </div>
+                    <!-- 얼음 소환 -->
+                    <div class="gacha-card">
+                        <h3 style="color: #3b82f6;">얼음 소환</h3>
+                        <p>빙결 및 적 이동속도 제어 계열 타워 획득률이 증가합니다.</p>
+                        <p style="font-size: 0.75rem; color: #60a5fa;">
+                            냉각 타워 / 접착 타워 등장률 50% 보장
+                        </p>
+                        <button class="btn-gacha-card" data-gacha="ice" style="background-color:#2563eb;">소환 (150 DC)</button>
+                    </div>
+                </div>
+                <div id="gacha-result" class="gacha-result-overlay" style="width:100%; max-width: 800px;">
+                    소환 결과가 여기에 표시됩니다.
+                </div>
+            </div>
+
+            <!-- Tab 3: Deck Setting -->
+            <div id="deck-tab" class="tab-content">
+                <div class="deck-section">
+                    <div class="deck-title">현재 전투 덱 (최대 5개 배치)</div>
+                    <div class="deck-slots" id="deck-slots-container">
+                        <!-- slots -->
+                    </div>
+                </div>
+                <div class="inventory-section">
+                    <h2>보유 타워 인벤토리 (클릭하여 덱 장착/해제)</h2>
+                    <div class="tower-grid" id="menu-inventory-grid">
+                        <!-- items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Tower Management & Awakening -->
+            <div id="management-tab" class="tab-content">
+                <div class="manage-left">
+                    <h2>보유 타워 목록</h2>
+                    <div class="tower-grid" id="manage-inventory-grid">
+                        <!-- items -->
+                    </div>
+                </div>
+                <div class="manage-right">
+                    <h2>타워 강화 및 각성 정보</h2>
+                    <div id="manage-detail-panel" style="text-align: center; color: var(--text-muted); padding: 40px 0;">
+                        상세 정보를 볼 타워를 목록에서 선택하세요.
+                    </div>
+                    <div id="manage-detail-content" class="hidden">
+                        <h3 id="manage-tower-name" style="color: var(--accent-blue); margin-bottom: 5px;">-</h3>
+                        <p id="manage-tower-prefix" style="font-size: 0.9rem; color: var(--text-muted);">-</p>
+                        <div class="detail-stats">
+                            <p>등급: <span id="manage-tower-rarity" class="stat-val">-</span></p>
+                            <p>레벨: <span id="manage-tower-level" class="stat-val">-</span></p>
+                            <p>공격력: <span id="manage-tower-damage" class="stat-val">-</span></p>
+                            <p>사거리: <span id="manage-tower-range" class="stat-val">-</span></p>
+                            <p>공격속도(프레임): <span id="manage-tower-firerate" class="stat-val">-</span></p>
+                        </div>
+                        <p id="manage-tower-desc" style="font-size: 0.85rem; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 6px; text-align: left;">-</p>
+                        <div class="upgrade-actions">
+                            <button id="menu-upgrade-button" class="btn-upgrade-menu">DC 강화 (비용: - DC)</button>
+                            <button id="menu-awaken-button" class="btn-awaken-menu">각성 해금 (비용: - DC)</button>
+                            <button id="menu-sell-button" class="btn-upgrade-menu" style="background-color: #dc2626; margin-top: 8px;">타워 판매 (반환: 25 DC)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== IN-GAME SCREEN ==================== -->
+        <div id="game-screen" class="screen">
+            <div id="boss-info-container" class="hidden">
+                <span id="boss-name"></span>
+                <div id="boss-health-bar-container">
+                    <div id="boss-health-bar"></div>
+                </div>
+            </div>
+            <div id="notification-area" class="hidden"></div>
+            <canvas id="game-canvas" width="800" height="520"></canvas>
+            
+            <div id="ui-panel">
+                <h2>전투 상황판</h2>
+                <div id="game-stats">
+                    <p>골드: <span id="currency">100</span></p>
+                    <p>웨이브: <span id="wave">0</span></p>
+                    <p>체력: <span id="health">20</span></p>
+                    <p>배치 타워: <span id="placed-towers-count">0</span> / <span id="slot-limit-display">8</span></p>
+                    <p>대기 타워: <span id="wait-towers-count">0</span> / <span id="wait-limit-display">4</span></p>
+                    <div id="buy-slot-container" class="hidden">
+                        <button id="buy-slot-button" class="btn-buy-slot">배치 한도 +1 (200G)</button>
+                    </div>
+                    <p style="border-top: 1.5px dashed var(--border-color); padding-top: 5px; margin-top: 5px; font-size: 0.75rem; color: var(--text-muted);">
+                        디버그 프레임: <span id="debug-loop-frame" style="color: var(--accent-purple);">0</span>
+                    </p>
+                </div>
+                
+                <div id="gacha-section">
+                    <button id="gacha-button">타워 소환 (비용: 50G)</button>
+                    <button id="start-wave-button">웨이브 시작</button>
+                    <button id="back-to-menu-button">메인메뉴로 후퇴</button>
+                </div>
+                
+                <h2>보유 대기 타워</h2>
+                <div id="unit-inventory"></div>
+            </div>
+        </div>
+
+        <!-- In-game Action Panel (Bottom Panel) -->
+        <div id="bottom-panel" style="display: none;">
+            <div id="selected-unit-info">
+                <h3>선택된 유닛</h3>
+                <p>이름: <span id="selected-unit-name">-</span></p>
+                <p>레벨: <span id="selected-unit-level">-</span></p>
+                <p>공격력: <span id="selected-unit-damage">-</span></p>
+                <p>사거리: <span id="selected-unit-range">-</span></p>
+                <p>공격속도: <span id="selected-unit-firerate">-</span></p>
+                <p style="margin-top: 5px; color: var(--text-muted); font-size: 0.8rem;">
+                    * 맵의 고지<span class="key-hint">Highland</span>에 설치 시 사거리 1.2배 증가
+                </p>
+            </div>
+            
+            <div style="display: flex; gap: 10px; flex: 1.5;">
+                <div id="upgrade-panel" class="hidden">
+                    <h4>인게임 스탯 분배</h4>
+                    <p>스탯포인트: <span id="stat-points">0</span></p>
+                    <button id="upgrade-button">업그레이드 (비용: 100)</button>
+                    <button id="awaken-button" class="hidden">인게임 각성</button>
+                    <div id="stat-buttons">
+                        <button class="stat-button" data-stat="damage">공격력 증가 (+10%)</button>
+                        <button class="stat-button" data-stat="range">사거리 증가 (+5%)</button>
+                        <button class="stat-button" data-stat="fireRate">연사력 증가 (+5%)</button>
+                    </div>
+                </div>
+                
+                <div id="action-buttons" style="justify-content: center;">
+                    <button id="sell-unit-button">판매 (30G)</button>
+                    <button id="move-unit-button">이동 (100G)</button>
+                </div>
+            </div>
+
+            <div id="selected-unit-description-container" style="flex: 1; word-wrap: break-word;">
+                <p>설명: <span id="selected-unit-description">-</span></p>
+            </div>
+            
+            <div id="enemy-info-panel" class="hidden">
+                <h3>선택된 적</h3>
+                <p>유형: <span id="enemy-type-name">-</span></p>
+                <p>체력: <span id="enemy-health">-</span></p>
+                <p>속도: <span id="enemy-speed">-</span></p>
+            </div>
+        </div>
+
+    </div>
+    
+    <!-- 자바스크립트 전역 에러 디버깅 패널 -->
+    <div id="debug-error-console" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(220, 38, 38, 0.95); color: white; padding: 15px; font-family: monospace; font-size: 13px; z-index: 9999; border-top: 3px solid #ff3333; max-height: 200px; overflow-y: auto;">
+        <div style="font-weight: bold; font-size: 15px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;">
+            <span>⚠️ 자바스크립트 런타임 오류 감지됨</span>
+            <button onclick="window.resetGameData()" style="background: white; color: #dc2626; border: none; padding: 4px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;">게임 데이터 완전 초기화</button>
+        </div>
+        <div id="debug-error-message" style="white-space: pre-wrap; line-height: 1.4;"></div>
+    </div>
+    
+    <script>
+        // 전역 에러 포착
+        window.addEventListener('error', function(e) {
+            var consoleEl = document.getElementById('debug-error-console');
+            var msgEl = document.getElementById('debug-error-message');
+            if (consoleEl && msgEl) {
+                consoleEl.style.display = 'block';
+                msgEl.textContent += "Error: " + e.message + "\nAt: " + e.filename + ":" + e.lineno + ":" + e.colno + "\nStack: " + (e.error ? e.error.stack : 'N/A') + "\n\n";
+            }
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            var consoleEl = document.getElementById('debug-error-console');
+            var msgEl = document.getElementById('debug-error-message');
+            if (consoleEl && msgEl) {
+                consoleEl.style.display = 'block';
+                msgEl.textContent += "Unhandled Promise Rejection: " + e.reason + "\n\n";
+            }
+        });
+    </script>
+    
+    <!-- 로컬 브라우저 CORS 회피를 위해 스크립트를 body 하단으로 이동 및 defer 속성 제거 -->
+    <script src="game.js?v=1.1"></script>
+</body>
+</html>
