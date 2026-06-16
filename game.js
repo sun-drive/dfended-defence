@@ -250,34 +250,34 @@ function initGame() {
 
     // 몬스터 종류 정의
     const baseEnemyTypes = {
-        'basic': { name: '기본', health: 100, speed: 1.0, color: '#e74c3c', reward: 10, rewardDC: 3 },
-        'tank': { name: '탱크', health: 300, speed: 0.6, color: '#c0392b', reward: 20, rewardDC: 6 },
-        'speedy': { name: '스피디', health: 50, speed: 2.2, color: '#f1c40f', reward: 15, rewardDC: 5 },
-        'stunner': { name: '기절', health: 80, speed: 0.9, color: '#2980b9', reward: 25, rewardDC: 8, stunRadius: 120, stunDuration: 120 },
-        'transparent': { name: '투명', health: 90, speed: 1.0, color: 'rgba(180, 180, 180, 0.6)', reward: 30, rewardDC: 10, isTransparent: true },
-        'jumper': { name: '점퍼', health: 70, speed: 1.2, color: '#9b59b6', reward: 35, rewardDC: 12, isJumper: true, jumpCooldownTime: 15, jumpDistance: 80 },
-        'regenerator': { name: '재생', health: 150, speed: 0.8, color: '#27ae60', reward: 20, rewardDC: 7, regenRate: 1 },
-        'splitter': { name: '분열', health: 120, speed: 1.0, color: '#a0522d', reward: 15, rewardDC: 5, splitsInto: 'basic', splitCount: 2 },
-        'healer': { name: '힐러', health: 100, speed: 1.0, color: '#3498db', reward: 15, rewardDC: 5, isHealer: true, healRange: 60, healAmount: 8, healCooldown: 90 },
-        'aggro': { name: '어그로', health: 200, speed: 0.5, color: '#800000', reward: 30, rewardDC: 9, isAggro: true },
+        'basic': { name: '기본', health: 100, speed: 1.0, color: '#e74c3c', reward: 4, rewardDC: 2 },
+        'tank': { name: '탱크', health: 300, speed: 0.6, color: '#c0392b', reward: 8, rewardDC: 4 },
+        'speedy': { name: '스피디', health: 50, speed: 2.2, color: '#f1c40f', reward: 5, rewardDC: 3 },
+        'stunner': { name: '기절', health: 80, speed: 0.9, color: '#2980b9', reward: 9, rewardDC: 5, stunRadius: 120, stunDuration: 120 },
+        'transparent': { name: '투명', health: 90, speed: 1.0, color: 'rgba(180, 180, 180, 0.6)', reward: 10, rewardDC: 6, isTransparent: true },
+        'jumper': { name: '점퍼', health: 70, speed: 1.2, color: '#9b59b6', reward: 12, rewardDC: 7, isJumper: true, jumpCooldownTime: 15, jumpDistance: 80 },
+        'regenerator': { name: '재생', health: 150, speed: 0.8, color: '#27ae60', reward: 8, rewardDC: 4, regenRate: 1 },
+        'splitter': { name: '분열', health: 120, speed: 1.0, color: '#a0522d', reward: 6, rewardDC: 3, splitsInto: 'basic', splitCount: 2 },
+        'healer': { name: '힐러', health: 100, speed: 1.0, color: '#3498db', reward: 6, rewardDC: 3, isHealer: true, healRange: 60, healAmount: 8, healCooldown: 90 },
+        'aggro': { name: '어그로', health: 200, speed: 0.5, color: '#800000', reward: 10, rewardDC: 5, isAggro: true },
         
         // 맵별 전용 몬스터들
-        'ice_spirit': { name: '얼음 정령', health: 120, speed: 1.2, color: '#3498db', reward: 20, rewardDC: 6, isIceSpirit: true },
-        'rock_golem': { name: '돌 갑옷 골렘', health: 400, speed: 0.4, color: '#34495e', reward: 35, rewardDC: 10, isHeavyTank: true, damageReduction: 20 },
-        'regen_spider': { name: '재생 거미', health: 130, speed: 1.6, color: '#2ecc71', reward: 25, rewardDC: 8, regenRate: 3 },
-        'desert_scorpion': { name: '모래전갈', health: 110, speed: 1.4, color: '#f39c12', reward: 25, rewardDC: 8, isScorpion: true },
-        'heavenly_wisp': { name: '유령 날개', health: 80, speed: 2.0, color: '#ecf0f1', reward: 30, rewardDC: 9, isTransparent: true },
+        'ice_spirit': { name: '얼음 정령', health: 120, speed: 1.2, color: '#3498db', reward: 7, rewardDC: 4, isIceSpirit: true },
+        'rock_golem': { name: '돌 갑옷 골렘', health: 400, speed: 0.4, color: '#34495e', reward: 12, rewardDC: 6, isHeavyTank: true, damageReduction: 20 },
+        'regen_spider': { name: '재생 거미', health: 130, speed: 1.6, color: '#2ecc71', reward: 8, rewardDC: 5, regenRate: 3 },
+        'desert_scorpion': { name: '모래전갈', health: 110, speed: 1.4, color: '#f39c12', reward: 8, rewardDC: 5, isScorpion: true },
+        'heavenly_wisp': { name: '유령 날개', health: 80, speed: 2.0, color: '#ecf0f1', reward: 10, rewardDC: 6, isTransparent: true },
         
-        // 맵별 보스들
-        'boss_hunter': { name: '헌터', health: 1200, speed: 0.7, color: '#2c3e50', reward: 200, rewardDC: 100, isBoss: true, isImmuneToFreeze: true },
-        'boss_shielder': { name: '쉴더', health: 1050, speed: 0.7, color: '#8e44ad', reward: 300, rewardDC: 150, isBoss: true, isImmuneToFreeze: true },
-        'boss_theking': { name: '더 킹', health: 1950, speed: 0.4, color: '#c0392b', reward: 500, rewardDC: 250, isBoss: true, isImmuneToFreeze: true },
-
-        'boss_ice_king': { name: '빙하의 제왕', health: 2200, speed: 0.5, color: '#2980b9', reward: 400, rewardDC: 200, isBoss: true, isIceKing: true, isImmuneToFreeze: true },
-        'boss_mountain_titan': { name: '산사태 골렘', health: 2500, speed: 0.4, color: '#7f8c8d', reward: 400, rewardDC: 200, isBoss: true, isMountainTitan: true, isImmuneToFreeze: true },
-        'boss_meadow_keeper': { name: '초원의 파수꾼', health: 2000, speed: 0.6, color: '#27ae60', reward: 400, rewardDC: 200, isBoss: true, isMeadowKeeper: true, isImmuneToFreeze: true },
-        'boss_sandstorm_lord': { name: '모래 폭풍 군주', health: 2100, speed: 0.6, color: '#f39c12', reward: 400, rewardDC: 200, isBoss: true, isSandstormLord: true, isImmuneToFreeze: true },
-        'boss_fallen_angel': { name: '타락 천사', health: 1800, speed: 0.7, color: '#9b59b6', reward: 400, rewardDC: 200, isBoss: true, isFallenAngel: true, isImmuneToFreeze: true }
+        // 맵별 보스들 (체력 40% 하향 보정)
+        'boss_hunter': { name: '헌터', health: 800, speed: 0.7, color: '#2c3e50', reward: 80, rewardDC: 40, isBoss: true, isImmuneToFreeze: true },
+        'boss_shielder': { name: '쉴더', health: 700, speed: 0.7, color: '#8e44ad', reward: 100, rewardDC: 50, isBoss: true, isImmuneToFreeze: true },
+        'boss_theking': { name: '더 킹', health: 1200, speed: 0.4, color: '#c0392b', reward: 150, rewardDC: 75, isBoss: true, isImmuneToFreeze: true },
+ 
+        'boss_ice_king': { name: '빙하의 제왕', health: 1300, speed: 0.5, color: '#2980b9', reward: 120, rewardDC: 60, isBoss: true, isIceKing: true, isImmuneToFreeze: true },
+        'boss_mountain_titan': { name: '산사태 골렘', health: 1500, speed: 0.4, color: '#7f8c8d', reward: 120, rewardDC: 60, isBoss: true, isMountainTitan: true, isImmuneToFreeze: true },
+        'boss_meadow_keeper': { name: '초원의 파수꾼', health: 1200, speed: 0.6, color: '#27ae60', reward: 120, rewardDC: 60, isBoss: true, isMeadowKeeper: true, isImmuneToFreeze: true },
+        'boss_sandstorm_lord': { name: '모래 폭풍 군주', health: 1200, speed: 0.6, color: '#f39c12', reward: 120, rewardDC: 60, isBoss: true, isSandstormLord: true, isImmuneToFreeze: true },
+        'boss_fallen_angel': { name: '타락 천사', health: 1100, speed: 0.7, color: '#9b59b6', reward: 120, rewardDC: 60, isBoss: true, isFallenAngel: true, isImmuneToFreeze: true }
     };
 
     // ==================== SYSTEM FUNCTIONS (LOBBY & SAVE) ====================
@@ -864,7 +864,8 @@ function initGame() {
             this.type = type;
             this.pathNodes = pathNodes;
 
-            const hpMult = isHardMode ? 1.5 : 1.0;
+            const waveHpScale = 1 + (wave * 0.06);
+            const hpMult = (isHardMode ? 1.5 : 1.0) * waveHpScale;
             this.health = type.health * hpMult;
             this.maxHealth = type.health * hpMult;
             this.speed = isHardMode ? type.speed * 1.2 : type.speed;
@@ -1770,11 +1771,15 @@ function initGame() {
             if (waveNum === 5) return [bossType, 'basic', 'basic'];
             if (waveNum === 10) return [bossType, 'tank', 'tank'];
             if (waveNum === 15) return [bossType, 'speedy', 'speedy', 'tank'];
+            if (waveNum === 20) {
+                if (selectedMap === 'classic') return ['boss_hunter', 'boss_shielder', 'boss_theking'];
+                return [bossType, 'tank', 'tank', 'healer', 'aggro'];
+            }
             return [bossType, 'tank', 'tank', 'healer', 'aggro'];
         }
 
         const comp = [];
-        const size = 5 + Math.floor(waveNum * 1.5);
+        const size = 4 + Math.floor(waveNum * 0.8);
         const pool = ['basic', 'speedy'];
         
         if (selectedMap === 'ice') pool.push('ice_spirit');
@@ -1783,13 +1788,13 @@ function initGame() {
         else if (selectedMap === 'desert') pool.push('desert_scorpion');
         else if (selectedMap === 'heaven') pool.push('heavenly_wisp');
 
-        if (waveNum > 3) pool.push('tank');
+        if (waveNum > 2) pool.push('tank');
         if (waveNum > 6) pool.push('stunner', 'transparent');
-        if (waveNum > 8) pool.push('jumper', 'regenerator');
-        if (waveNum > 11) pool.push('splitter', 'healer', 'aggro');
+        if (waveNum > 9) pool.push('jumper', 'regenerator');
+        if (waveNum > 12) pool.push('splitter', 'healer', 'aggro');
 
         for (let i = 0; i < size; i++) {
-            comp.push(pool[Math.floor(Math.random() * pool.length)]);
+            comp.push(pool[Math.floor((i * 11 + waveNum * 5) % pool.length)]);
         }
         return comp;
     }
@@ -1805,7 +1810,7 @@ function initGame() {
         }
 
         if (wave % 5 === 0 && !waveBonusGiven.includes(wave)) {
-            const bonus = wave * 15;
+            const bonus = wave * 8;
             currency += bonus;
             waveBonusGiven.push(wave);
             showNotification(`${wave} 웨이브 보스전 돌입! 보너스 +${bonus}G`);
