@@ -1226,13 +1226,18 @@ function initGame() {
             ctx.fillStyle = this.stats.color;
             ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
 
-            ctx.lineWidth = 2;
-            switch (this.stats.rarity) {
-                case 'common': ctx.strokeStyle = '#a1a1aa'; break;
-                case 'rare': ctx.strokeStyle = '#3b82f6'; break;
-                case 'epic': ctx.strokeStyle = '#8b5cf6'; break;
-                case 'legendary': ctx.strokeStyle = '#f59e0b'; break;
-                default: ctx.strokeStyle = '#000';
+            if (this.isSelected) {
+                ctx.strokeStyle = '#2ecc71'; // 선택 상태일 때 밝은 연두색 강조 테두리
+                ctx.lineWidth = 3.5;
+            } else {
+                ctx.lineWidth = 2;
+                switch (this.stats.rarity) {
+                    case 'common': ctx.strokeStyle = '#a1a1aa'; break;
+                    case 'rare': ctx.strokeStyle = '#3b82f6'; break;
+                    case 'epic': ctx.strokeStyle = '#8b5cf6'; break;
+                    case 'legendary': ctx.strokeStyle = '#f59e0b'; break;
+                    default: ctx.strokeStyle = '#000';
+                }
             }
             ctx.strokeRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
 
