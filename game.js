@@ -2674,6 +2674,10 @@ function initGame() {
         }
     });
 
+    startWaveButton.addEventListener('click', () => {
+        startNextWave();
+    });
+
     // ==================== MAIN GAME LOOP ====================
 
     function gameLoop() {
