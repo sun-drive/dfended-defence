@@ -485,7 +485,6 @@ h1 {
 
 /* In-game Screen Layout */
 #game-screen {
-    display: none;
     flex-direction: row;
     position: relative;
     width: 1050px;
