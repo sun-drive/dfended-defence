@@ -1,3 +1,17 @@
+// 전역 안전 초기화 함수 정의 (글로벌 스코프에 초조기 바인딩하여 타이밍 이슈 차단)
+window.resetGameData = function() {
+    try {
+        localStorage.removeItem('gacha_td_dc');
+        localStorage.removeItem('gacha_td_towers');
+        localStorage.removeItem('gacha_td_deck');
+        localStorage.removeItem('gacha_td_inv_limit');
+        alert('게임 데이터가 성공적으로 초기화되었습니다. 페이지를 새로고침합니다.');
+        window.location.reload();
+    } catch (e) {
+        alert('데이터 초기화에 실패했습니다: ' + e.message);
+    }
+};
+
 function initGame() {
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
@@ -2750,17 +2764,3 @@ if (document.readyState === 'loading') {
 } else {
     initGame();
 }
-
-// 전역 안전 초기화 함수 정의 (글로벌 스코프에 조기 바인딩)
-window.resetGameData = function() {
-    try {
-        localStorage.removeItem('gacha_td_dc');
-        localStorage.removeItem('gacha_td_towers');
-        localStorage.removeItem('gacha_td_deck');
-        localStorage.removeItem('gacha_td_inv_limit');
-        alert('게임 데이터가 성공적으로 초기화되었습니다. 페이지를 새로고침합니다.');
-        window.location.reload();
-    } catch (e) {
-        alert('데이터 초기화에 실패했습니다: ' + e.message);
-    }
-};
