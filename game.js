@@ -172,7 +172,7 @@ function initGame() {
     const towerData = {
         'basic': { name: '총 타워', rarity: 'common', color: '#7f8c8d', damage: 25, range: 110, fireRate: 40, description: '단일 적에게 발사체를 발사하는 기본적인 타워입니다. 메인메뉴 각성 해금 시 인게임 5레벨에서 개틀링으로 각성할 수 있습니다.' },
         'tesla': { name: '테슬라 타워', rarity: 'common', color: '#16a085', damage: 20, range: 80, fireRate: 90, canDetectGhost: true, description: '범위 내 모든 적에게 전기 피해를 입힙니다. 메인메뉴 각성 해금 시 인게임 5레벨에서 번개 생성기로 각성할 수 있습니다. 유령을 탐지할 수 있습니다.' },
-        'bomb': { name: '폭탄 타워', rarity: 'common', color: '#2c3e50', damage: 18, range: 120, fireRate: 60, blastRadius: 20, canDetectGhost: true, description: '착탄 시 폭발하여 범위 피해를 입히는 폭탄을 발사합니다. 유령을 탐지할 수 있습니다.' },
+        'bomb': { name: '폭탄 타워', rarity: 'common', color: '#2c3e50', damage: 18, range: 120, fireRate: 60, blastRadius: 55, canDetectGhost: true, description: '착탄 시 폭발하여 범위 피해를 입히는 폭탄을 발사합니다. 유령을 탐지할 수 있습니다.' },
         'flame': { name: '화염 타워', rarity: 'rare', color: '#d35400', damage: 10, range: 100, fireRate: 30, description: '적에게 화염 발사체를 발사하여 3초간 20의 지속 피해를 입힙니다. 메인메뉴 각성 해금 시 인게임 5레벨에서 용암 타워로 각성할 수 있습니다.' },
         'glue': { name: '접착 타워', rarity: 'rare', color: '#27ae60', damage: 0, range: 80, fireRate: 60, description: '적의 경로에 끈끈한 타일을 생성하여 2초 동안 적을 멈추게 합니다.' },
         'ice': { name: '냉각 타워', rarity: 'rare', color: '#2980b9', range: 60, slowFactor: 0.5, slowDuration: 120, damage: 0, fireRate: 90, description: '범위 내 적들을 얼려 이동 속도를 감소시킵니다. 메인메뉴 각성 해금 시 인게임 5레벨에서 급속냉동기로 각성할 수 있습니다.' },
@@ -1370,9 +1370,13 @@ function initGame() {
         }
         attack() {
             playSound('laser');
+            const activeRange = this.sandstormDebuffTimer > 0 ? this.stats.range * 0.5 : this.stats.range;
+            
+            // 검기 범위 공격 시각 이펙트 생성
+            explosions.push(new SlashEffect(this.x, this.y, activeRange, 'rgba(192, 57, 43, 0.45)'));
+
             enemies.forEach(enemy => {
                 const distance = Math.sqrt(Math.pow(this.x - enemy.x, 2) + Math.pow(this.y - enemy.y, 2));
-                const activeRange = this.sandstormDebuffTimer > 0 ? this.stats.range * 0.5 : this.stats.range;
                 if (distance <= activeRange) {
                     dealDamageToEnemy(enemy, this.stats.damage);
                 }
@@ -1636,6 +1640,26 @@ function initGame() {
                 }
             });
         }
+
+        draw() {
+            ctx.save();
+            // 폭탄 검정색 원형 바디
+            ctx.fillStyle = '#2c3e50';
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = '#000';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 도화선 끝부분 불꽃 표시
+            ctx.fillStyle = '#f1c40f';
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = '#f39c12';
+            ctx.beginPath();
+            ctx.arc(this.x + 3, this.y - 3, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
     }
 
     class LaserProjectile extends Projectile {
@@ -1669,16 +1693,87 @@ function initGame() {
         }
     }
 
-    class SwordWaveProjectile extends Projectile {
+    class SwordWaveProjectile {
         constructor(x, y, target, damage, source) {
-            super(x, y, target, damage, source, { pierce: 3 });
-            this.speed = 5.0;
+            this.x = x;
+            this.y = y;
+            this.damage = damage;
+            this.source = source;
+            this.speed = 7.0; 
+            this.pierce = 3;  
+            this.hitEnemies = [];
+            
+            const dx = target.x - x;
+            const dy = target.y - y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance > 0) {
+                this.vx = (dx / distance) * this.speed;
+                this.vy = (dy / distance) * this.speed;
+            } else {
+                this.vx = this.speed;
+                this.vy = 0;
+            }
+            this.angle = Math.atan2(this.vy, this.vx);
         }
+
+        move() {
+            this.x += this.vx;
+            this.y += this.vy;
+
+            if (this.x < -50 || this.x > canvas.width + 50 || this.y < -50 || this.y > canvas.height + 50) {
+                return true;
+            }
+
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                if (this.hitEnemies.includes(enemy)) continue;
+
+                const dx = this.x - enemy.x;
+                const dy = this.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 24) {
+                    dealDamageToEnemy(enemy, this.damage);
+                    playSound('hit');
+                    this.hitEnemies.push(enemy);
+                    this.pierce--;
+
+                    if (this.pierce <= 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         draw() {
-            ctx.fillStyle = '#c0392b';
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.angle);
+
+            const grad = ctx.createLinearGradient(-15, 0, 15, 0);
+            grad.addColorStop(0, 'rgba(231, 76, 60, 0.9)'); 
+            grad.addColorStop(0.5, 'rgba(241, 196, 15, 0.9)'); 
+            grad.addColorStop(1, 'rgba(255, 255, 255, 1)'); 
+
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#e74c3c';
+
             ctx.beginPath();
-            ctx.arc(this.x, this.y, 8, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.arc(0, 0, 14, -Math.PI / 2.5, Math.PI / 2.5);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(192, 57, 43, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(-6, 0, 12, -Math.PI / 2.5, Math.PI / 2.5);
+            ctx.stroke();
+
+            ctx.restore();
         }
     }
 
@@ -1706,24 +1801,114 @@ function initGame() {
         }
     }
 
-    class Explosion {
-        constructor(x, y, radius, color = 'rgba(230, 126, 34, 0.7)') {
+    class SlashEffect {
+        constructor(x, y, radius, color = 'rgba(192, 57, 43, 0.4)') {
             this.x = x;
             this.y = y;
             this.radius = radius;
-            this.maxRadius = radius;
-            this.life = 20;
+            this.life = 12;
+            this.maxLife = 12;
             this.color = color;
         }
         update() {
             this.life--;
-            this.radius = this.maxRadius * (this.life / 20);
         }
         draw() {
-            ctx.fillStyle = this.color;
+            const progress = (this.maxLife - this.life) / this.maxLife; // 0 -> 1
+            ctx.save();
+            ctx.strokeStyle = this.color;
+            ctx.lineWidth = 4 * (1 - progress);
+            
+            // 바깥으로 퍼져나가는 검기 링
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.arc(this.x, this.y, this.radius * progress, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // 날카로운 칼날 궤적 (호) 그리기
+            ctx.strokeStyle = 'rgba(231, 76, 60, 0.8)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius * progress * 0.8, progress * Math.PI, (progress + 0.6) * Math.PI);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius * progress * 0.9, (progress + 1) * Math.PI, (progress + 1.6) * Math.PI);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    }
+
+    class Explosion {
+        constructor(x, y, radius) {
+            this.x = x;
+            this.y = y;
+            this.maxRadius = radius * 1.2;
+            this.radius = 5;
+            this.life = 25;
+            this.maxLife = 25;
+            
+            this.particles = [];
+            const particleCount = 8 + Math.floor(radius / 8);
+            for (let i = 0; i < particleCount; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1.5 + Math.random() * 3.5;
+                this.particles.push({
+                    x: 0,
+                    y: 0,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: 3 + Math.random() * 5,
+                    color: Math.random() < 0.6 ? '#f39c12' : '#e67e22'
+                });
+            }
+        }
+
+        update() {
+            this.life--;
+            const progress = (this.maxLife - this.life) / this.maxLife;
+            this.radius = this.maxRadius * Math.sin(progress * Math.PI / 2);
+            
+            this.particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vx *= 0.94;
+                p.vy *= 0.94;
+                p.size *= 0.92;
+            });
+        }
+
+        draw() {
+            const progress = (this.maxLife - this.life) / this.maxLife;
+            const alpha = 1 - progress;
+
+            ctx.save();
+            ctx.translate(this.x, this.y);
+
+            const grad = ctx.createRadialGradient(0, 0, this.radius * 0.2, 0, 0, this.radius);
+            grad.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
+            grad.addColorStop(0.3, `rgba(241, 196, 15, ${alpha * 0.9})`);
+            grad.addColorStop(0.7, `rgba(230, 126, 34, ${alpha * 0.7})`);
+            grad.addColorStop(1, `rgba(192, 57, 43, 0)`);
+
+            ctx.fillStyle = grad;
+            ctx.shadowBlur = 15 * alpha;
+            ctx.shadowColor = '#e67e22';
+
+            ctx.beginPath();
+            ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
             ctx.fill();
+
+            ctx.shadowBlur = 0;
+            this.particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = alpha;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.restore();
         }
     }
 
