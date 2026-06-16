@@ -578,11 +578,11 @@ h1 {
 }
 
 #ui-panel h2, #ui-panel h3 {
-    font-size: 1.05rem;
+    font-size: 1.0rem;
     text-align: center;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 6px;
-    margin: 5px 0 10px 0;
+    padding-bottom: 4px;
+    margin: 3px 0 6px 0;
     color: #fff;
 }
 
@@ -590,13 +590,13 @@ h1 {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    padding: 8px 12px;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
 }
 
 #game-stats p {
-    margin: 5px 0;
+    margin: 4px 0;
     display: flex;
     justify-content: space-between;
 }
@@ -611,18 +611,18 @@ h1 {
 }
 
 #buy-slot-container {
-    margin: 5px 0;
+    margin: 4px 0;
 }
 
 .btn-buy-slot {
     width: 100%;
-    padding: 6px;
+    padding: 5px;
     background-color: #16a34a;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: bold;
 }
 .btn-buy-slot:hover {
@@ -637,18 +637,19 @@ h1 {
 #gacha-section {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 10px;
+    gap: 6px;
+    margin-bottom: 6px;
 }
 
 #gacha-button, #start-wave-button, #back-to-menu-button {
-    padding: 10px;
+    padding: 8px;
     font-weight: bold;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     color: white;
     transition: all 0.2s ease;
+    font-size: 0.85rem;
 }
 
 #gacha-button {
@@ -674,6 +675,8 @@ h1 {
 
 #unit-inventory {
     flex-grow: 1;
+    min-height: 140px;
+    flex-shrink: 0;
     border: 1px solid var(--border-color);
     background-color: rgba(0,0,0,0.2);
     border-radius: 6px;
